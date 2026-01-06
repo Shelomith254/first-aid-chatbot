@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QuickAid – First Aid Assistant</title>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: url("YOUR_BACKGROUND_IMAGE_HERE");
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 360px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        /* Header */
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            background: #1976d2;
+            color: white;
+        }
+
+        .chat-header h1 {
+            font-size: 1.3rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chat-header button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-left: 6px;
+        }
+
+        /* Side Menu */
+        .side-menu {
+            position: absolute;
+            top: 50px;
+            right: 10px;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            display: none;
+            flex-direction: column;
+            width: 160px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+
+        .side-menu a {
+            padding: 10px 12px;
+            text-decoration: none;
+            color: #1976d2;
+            border-bottom: 1px solid #eee;
+        }
+
+        .side-menu a:last-child {
+            border-bottom: none;
+        }
+
+        .side-menu a:hover {
+            background: #e3f2fd;
+        }
+
+        /* Greeting */
+        .greeting {
+            padding: 6px 10px;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        /* Quick Buttons */
+        .quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .quick-buttons button {
+            background: #1565c0;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+
+        .quick-buttons button:hover {
+            background: #0d47a1;
+            transform: scale(1.05);
+        }
+
+        /* Messages */
+        #messages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+        }
+
+        .message {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            max-width: 90%;
+            padding: 6px 8px;
+            margin-bottom: 6px;
+            border-radius: 8px;
+        }
+
+        .user {
+            margin-left: auto;
+            background: #e3f2fd;
+        }
+
+        .bot {
+            background: #f1f1f1;
+        }
+
+        /* Chat Input */
+        .chat-input {
+            display: flex;
+            gap: 6px;
+            padding: 8px;
+            border-top: 1px solid #eee;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 6px 10px;
+            border-radius: 16px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+
+        .chat-input button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #1976d2;
+        }
+
+        .chat-input button:hover {
+            color: #0d47a1;
+        }
+
+       /* Dark theme */
+/* Dark theme */
+body.dark-mode {
+    background-color: #121212; /* dark background for the whole page */
+}
+
+body.dark-mode .chat-container {
+    background: #1c1c1c; /* solid dark container */
+    color: #ffffff; /* base text color */
+}
+
+body.dark-mode .greeting {
+    color: #e0e0e0; /* bright greeting text */
+    font-weight: 500;
+}
+
+body.dark-mode .quick-buttons button {
+    background: #2a7ae2; /* brighter blue buttons */
+    color: #ffffff; 
+    border: 1px solid #1565c0;
+}
+
+body.dark-mode .quick-buttons button:hover {
+    background: #1565c0;
+    transform: scale(1.05);
+}
+
+body.dark-mode #messages {
+    color: #f5f5f5; /* high contrast for chat messages */
+    font-size: 0.9rem;
+}
+
+body.dark-mode .message.user {
+    background: #1565c0; /* distinct blue for user */
+    color: #ffffff;
+    align-self: flex-end;
+}
+
+body.dark-mode .message.bot {
+    background: #333333; /* dark gray for bot */
+    color: #ffffff;
+    align-self: flex-start;
+}
+
+body.dark-mode .chat-input input {
+    background: #2c2c2c;
+    color: #ffffff;
+    border: 1px solid #555;
+    padding: 8px 12px;
+}
+
+body.dark-mode .chat-input button {
+    color: #2a7ae2;
+}
+
+body.dark-mode .chat-input button:hover {
+    color: #1565c0;
+}
+
+body.dark-mode .chat-header {
+    background: #1976d2;
+    color: #ffffff;
+}
+
+body.dark-mode .chat-header h1 {
+    color: #ffffff;
+}
+
+body.dark-mode .chat-header button {
+    color: #ffffff;
+}
+
+
+    </style>
+</head>
+
+<body>
+<div class="chat-container">
+
+    <div class="chat-header">
+        <h1><i class="fa-solid fa-cross"></i> QuickAid</h1>
+        <div>
+            <button id="themeToggle" title="Toggle Light/Dark"><i class="fa-solid fa-moon"></i></button>
+            <button id="menuBtn" title="Menu"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </div>
+
+    <!-- Side menu -->
+    <nav id="sideMenu" class="side-menu">
+        <a href="#">New Chat</a>
+        <a href="#">Previous Chats</a>
+        <a href="/accounts/logout/">Logout</a>
+    </nav>
+
+    <div class="greeting">
+        Hi {{ username }}! How can I help you today?
+    </div>
+
+    <div class="quick-buttons">
+        <button type="button" data-prompt="What should I do for bleeding?">🩸 Bleeding</button>
+        <button type="button" data-prompt="How to treat burns?">🔥 Burns</button>
+        <button type="button" data-prompt="Someone is choking, what to do?">😮‍💨 Choking</button>
+        <button type="button" data-prompt="How to help an unconscious person?">🧠 Unconscious</button>
+        <button type="button" data-prompt="How to handle a fracture?">🤕 Fracture</button>
+    </div>
+
+    <div id="messages"></div>
+
+    <form id="chatForm" class="chat-input">
+        {% csrf_token %}
+        <input type="text" id="prompt" placeholder="Ask a first aid question…" required>
+        <button type="button" id="voiceBtn"><i class="fa-solid fa-microphone"></i></button>
+        <button type="submit"><i class="fa-solid fa-paper-plane"></i></button>
+    </form>
+
+</div>
+
+<script>
+const chatForm = document.getElementById('chatForm');
+const messagesDiv = document.getElementById('messages');
+const promptInput = document.getElementById('prompt');
+const voiceBtn = document.getElementById('voiceBtn');
+const themeToggle = document.getElementById('themeToggle');
+const menuBtn = document.getElementById('menuBtn');
+const sideMenu = document.getElementById('sideMenu');
+
+// Add message to chat
+function addMessage(text, sender) {
+    const div = document.createElement('div');
+    div.classList.add('message', sender === 'You' ? 'user' : 'bot');
+
+    const icon = document.createElement('i');
+    icon.className = sender === 'You'
+        ? 'fa-solid fa-user'
+        : 'fa-solid fa-kit-medical';
+
+    const span = document.createElement('span');
+    span.textContent = text;
+
+    div.appendChild(icon);
+    div.appendChild(span);
+
+    messagesDiv.appendChild(div);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+// Send message to backend
+async function sendMessage(message) {
+    addMessage(message, 'You');
+
+    const formData = new FormData();
+    formData.append('prompt', message);
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+    try {
+        const response = await fetch("", {
+            method: "POST",
+            body: formData
+        });
+        const data = await response.json();
+        addMessage(data.response, 'Bot');
+    } catch {
+        addMessage("Error sending message.", "Bot");
+    }
+}
+
+// Form submission
+chatForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const message = promptInput.value.trim();
+    if (message) {
+        sendMessage(message);
+        promptInput.value = '';
+    }
+});
+
+// Quick buttons
+document.querySelectorAll('.quick-buttons button').forEach(btn => {
+    btn.addEventListener('click', () => {
+        sendMessage(btn.getAttribute('data-prompt'));
+    });
+});
+
+// Voice input
+voiceBtn.addEventListener('click', () => {
+    if (!('webkitSpeechRecognition' in window)) {
+        alert("Speech recognition not supported");
+        return;
+    }
+    const recognition = new webkitSpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.start();
+    recognition.onresult = event => {
+        const speech = event.results[0][0].transcript;
+        promptInput.value = speech;
+        sendMessage(speech);
+    };
+});
+
+// Theme toggle
+themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    themeToggle.innerHTML = document.body.classList.contains('dark-mode')
+        ? '<i class="fa-solid fa-sun"></i>'
+        : '<i class="fa-solid fa-moon"></i>';
+});
+
+// Hamburger menu toggle
+menuBtn.addEventListener('click', () => {
+    sideMenu.style.display = sideMenu.style.display === 'flex' ? 'none' : 'flex';
+});
+// Add message to chat
+function addMessage(text, sender, isTyping = false) {
+    const div = document.createElement('div');
+    div.classList.add('message', sender === 'You' ? 'user' : 'bot');
+
+    const icon = document.createElement('i');
+    icon.className = sender === 'You'
+        ? 'fa-solid fa-user'
+        : 'fa-solid fa-kit-medical';
+
+    const span = document.createElement('span');
+    span.textContent = text;
+
+    div.appendChild(icon);
+    div.appendChild(span);
+
+    messagesDiv.appendChild(div);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+    // Return the div if it's a typing message so we can replace it later
+    if (isTyping) return div;
+}
+
+// Send message to backend with typing indicator
+async function sendMessage(message) {
+    // Show user's message
+    addMessage(message, 'You');
+
+    // Show "Bot is typing..." and keep reference
+    const typingDiv = addMessage("Bot is typing...", 'Bot', true);
+
+    const formData = new FormData();
+    formData.append('prompt', message);
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+    try {
+        const response = await fetch("", { method: "POST", body: formData });
+        const data = await response.json();
+
+        // Replace typing text with actual response
+        typingDiv.querySelector('span').textContent = data.response;
+    } catch {
+        typingDiv.querySelector('span').textContent = "Error sending message.";
+    }
+}
+
+</script>
+</body>
+</html>
