@@ -1,6 +1,7 @@
+# Use a lightweight Python image
 FROM python:3.11-slim
 
-# Install system dependencies (needed for PyAudio)
+# Install system dependencies for PyAudio (if needed)
 RUN apt-get update && apt-get install -y \
     gcc \
     portaudio19-dev \
@@ -12,17 +13,23 @@ RUN apt-get update && apt-get install -y \
 # Set work directory
 WORKDIR /app
 
-# Copy requirements first (better Docker caching)
+# Copy requirements first (for caching)
 COPY requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project files
+# Copy project files (including db.sqlite3 if it exists)
 COPY . .
 
-# Expose port (Render uses $PORT internally)
+# Collect static files (important for Render)
+RUN python manage.py collectstatic --noinput
+
+# Run migrations
+RUN python manage.py migrate
+
+# Expose port (Render uses $PORT)
 EXPOSE 8000
 
-# Run migrations AND start server at runtime
-CMD python manage.py migrate && gunicorn chatbot_project.wsgi:application --bind 0.0.0.0:$PORT
+# Start Django with Gunicorn
+CMD gunicorn chatbot_project.wsgi:application --bind 0.0.0.0:$PORT
