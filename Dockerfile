@@ -21,6 +21,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project files
 COPY . .
 
+# Run Django migrations
+RUN python manage.py migrate
+
 # Expose port (Render uses $PORT internally)
 EXPOSE 8000
 
